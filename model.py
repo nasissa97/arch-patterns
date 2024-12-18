@@ -1,4 +1,4 @@
-from typing import NewType, Optional 
+from typing import List, NewType, Optional 
 from datetime import date
 from dataclasses import dataclass
 
@@ -20,6 +20,21 @@ class Batch:
     self._purchased_quantity = qty
     self._allocations = set() # type: Set[OrderLine]
 
+  def __eq__(self, other):
+    if not isinstance(other, Batch):
+      return False
+    return other.reference == self.reference
+
+  def __hash__(self):
+    return hash(self.reference)
+
+  def __gt__(self, other):
+    if self.eta is None:
+      return False
+    if other.eta is None:
+      return False
+    return self.eta > other.eta
+
   def allocate(self, line: OrderLine):
     if self.can_allocate(line):
       self._allocations.add(line)
@@ -34,7 +49,20 @@ class Batch:
 
   @property
   def available_quantity(self) -> int:
-    return self._purchased_quantity
+    return self._purchased_quantity - self.allocated_quantity
   
   def can_allocate(self, line: OrderLine) -> bool:
     return self.sku == line.sku and self.available_quantity >= line.qty
+
+class OutOfStock(Exception):
+  pass
+
+# Service
+def allocate(line: OrderLine, batches: List[Batch]) -> str:
+  try:
+    batch = next(b for b in sorted(batches) if b.can_allocate(line))
+    batch.allocate(line)
+    return batch.reference
+  except StopIteration:
+    raise OutOfStock(f"Out of stock for sku {line.sku}")
+

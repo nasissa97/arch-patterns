@@ -1,4 +1,4 @@
-from model import Batch, OrderLine
+from model import Batch, OrderLine, Quantity, Reference, Sku
 from datetime import date
 
 def make_batch_and_line(sku, batch_qty, line_qty):
@@ -33,7 +33,7 @@ def test_cannot_allocate_if_skus_do_not_match():
 
 def test_can_only_deallocate_allocated_lines():
   batch, unallocated_line = make_batch_and_line("DECORTATIVE-TRINKET", 20, 2)
-  batch.deallocate(unallocated_line)
+  batch.decallocate(unallocated_line)
   assert batch.available_quantity == 20
 
 def test_allocation_is_idempotent():
