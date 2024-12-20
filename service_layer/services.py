@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from domain.model import model, OrderLine
+from domain import model
+from domain.model import OrderLine
 from adapters.repository import AbstractRepository
 
 

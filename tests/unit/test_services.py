@@ -3,6 +3,9 @@ from adapters import repository
 from domain import model
 from service_layer import services
 
+print(dir(model))
+print(dir(services))
+
 
 class FakeRepository(repository.AbstractRepository):
     def __init__(self, batches):
@@ -44,7 +47,7 @@ def test_error_for_invalid_sku():
 
 
 def test_commits():
-  line = model.Batch("b1", "OMINOUS", 100, eta=None)
+  line = model.OrderLine("o1", "OMINOUS-MIRROR", 10)
   batch = model.Batch("b1", "OMINOUS-MIRROR", 100, eta=None)
   repo = FakeRepository([batch])
   session = FakeSession()
