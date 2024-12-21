@@ -5,12 +5,13 @@ from allocation.service_layer import services, unit_of_work
 
 class FakeRepository(repository.AbstractRepository):
     def __init__(self, products):
+        super().__init__()
         self._products = set(products)
 
-    def add(self, product):
+    def _add(self, product):
         self._products.add(product)
 
-    def get(self, sku):
+    def _get(self, sku):
         return next((b for b in self._products if b.sku == sku), None)
 
 
@@ -19,8 +20,8 @@ class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
         self.products = FakeRepository([])  
         self.committed = False 
 
-    def commit(self):
-        self.committed = True  
+    def _commit(self):
+      self.committed = True
 
     def rollback(self):
         pass
