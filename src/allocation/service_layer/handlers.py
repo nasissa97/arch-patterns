@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from allocation.adapters import email
+from allocation.adapters import email, redis_eventpublisher
 from allocation.domain import events, model
 from allocation.domain.model import OrderLine
 
@@ -62,3 +62,9 @@ def send_out_of_stock_notification(
     "stock@made.com",
     f"Out of stock for {event.sku}",
   )
+
+def publish_allocated_event(
+  event: events.Allocated,
+  uow:  unit_of_work.AbstractUnitOfWork
+):
+  redis_eventpublisher.publish("line_allocated", event)
