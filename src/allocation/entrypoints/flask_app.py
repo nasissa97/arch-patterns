@@ -1,6 +1,7 @@
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, jsonify, request
 
+from allocation import view
 from allocation.adapters import orm
 from allocation.domain import commands
 from allocation.service_layer import messagebus, unit_of_work
@@ -36,3 +37,12 @@ def allocate_endpoint():
     return {"message": str(e)}, 400
 
   return {"batchref": batchref}, 201
+
+
+@app.route("/allocations/<orderid>", method=["GET"])
+def allocations_view_endpoint(orderid):
+  uow = unit_of_work.SqlAlchemyUnitOfWork()
+  result = views.allocations(orderid, uow)
+  if not result:
+    return "not found", 404
+  return jsonify(result), 200
